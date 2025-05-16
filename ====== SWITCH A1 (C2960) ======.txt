@@ -1,0 +1,120 @@
+====== SWITCH A1 (C2960) ======
+
+Current configuration : 1915 bytes
+!
+version 15.0
+no service timestamps log datetime msec
+no service timestamps debug datetime msec
+no service password-encryption
+!
+hostname SWA1
+!
+!
+!
+ip ssh version 2
+ip domain-name campus.lab
+!
+username netadmin secret 5 $1$mERr$5.a6P4JqbNiMX01usIfka/
+!
+!
+!
+spanning-tree mode rapid-pvst
+spanning-tree extend system-id
+!
+interface FastEthernet0/1
+ switchport trunk allowed vlan 10,20,30,40
+ switchport mode trunk
+ spanning-tree portfast trunk
+!
+interface FastEthernet0/2
+ switchport trunk allowed vlan 10,20,30,40
+ switchport mode trunk
+ spanning-tree portfast trunk
+!
+interface FastEthernet0/3
+ description PC2  IT
+ switchport access vlan 10
+ switchport mode access
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+!
+interface FastEthernet0/4
+ description PC3  IT
+ switchport access vlan 10
+ switchport mode access
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+!
+interface FastEthernet0/5
+ description PC4  HR
+ switchport access vlan 20
+ switchport mode access
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+!
+interface FastEthernet0/6
+!
+interface FastEthernet0/7
+!
+interface FastEthernet0/8
+!
+interface FastEthernet0/9
+!
+interface FastEthernet0/10
+!
+interface FastEthernet0/11
+!
+interface FastEthernet0/12
+!
+interface FastEthernet0/13
+!
+interface FastEthernet0/14
+!
+interface FastEthernet0/15
+!
+interface FastEthernet0/16
+!
+interface FastEthernet0/17
+!
+interface FastEthernet0/18
+!
+interface FastEthernet0/19
+!
+interface FastEthernet0/20
+!
+interface FastEthernet0/21
+!
+interface FastEthernet0/22
+!
+interface FastEthernet0/23
+!
+interface FastEthernet0/24
+!
+interface GigabitEthernet0/1
+!
+interface GigabitEthernet0/2
+!
+interface Vlan1
+ no ip address
+ shutdown
+!
+!
+!
+!
+ip access-list standard MGMT-SSH
+ permit 10.0.10.0 0.0.0.255
+ permit 10.1.10.0 0.0.0.255
+ deny any
+line con 0
+!
+line vty 0 4
+ access-class MGMT-SSH in
+ login local
+ transport input ssh
+line vty 5 15
+ login
+!
+!
+!
+!
+end

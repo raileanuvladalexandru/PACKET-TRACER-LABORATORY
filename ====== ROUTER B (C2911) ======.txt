@@ -1,0 +1,125 @@
+====== ROUTER B (C2911) ======
+
+Current configuration : 1863 bytes
+!
+version 15.1
+no service timestamps log datetime msec
+no service timestamps debug datetime msec
+no service password-encryption
+!
+hostname RouterB
+!
+!
+!
+!
+!
+!
+!
+!
+ip cef
+no ipv6 cef
+!
+!
+!
+username admin privilege 15 secret 5 $1$mERr$hysK6NecugaeGcSGo29Wf0
+!
+!
+license udi pid CISCO2911/K9 sn FTX1524X9HG-
+license boot module c2900 technology-package securityk9
+!
+!
+!
+crypto isakmp policy 10
+ encr aes 256
+ authentication pre-share
+ group 5
+!
+crypto isakmp key CampusKey123 address 10.255.255.1
+!
+!
+!
+crypto ipsec transform-set R_B-R_A esp-aes 256 esp-sha-hmac
+!
+crypto map IPSEC-GRE 100 ipsec-isakmp 
+ set peer 10.255.255.1
+ set pfs group5
+ set security-association lifetime seconds 86400
+ set transform-set R_B-R_A 
+ match address 110
+!
+!
+!
+!
+ip ssh version 2
+ip domain-name campus.local
+!
+!
+spanning-tree mode pvst
+!
+!
+!
+!
+!
+!
+interface Tunnel1
+ ip address 50.50.50.2 255.255.255.252
+ mtu 1476
+ tunnel source GigabitEthernet0/1
+ tunnel destination 10.255.255.1
+!
+!
+interface GigabitEthernet0/0
+ description To MLS-B
+ ip address 10.1.254.2 255.255.255.252
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/1
+ description Inter-campus
+ ip address 10.255.255.2 255.255.255.252
+ duplex auto
+ speed auto
+ crypto map IPSEC-GRE
+!
+interface GigabitEthernet0/2
+ no ip address
+ duplex auto
+ speed auto
+ shutdown
+!
+interface Vlan1
+ no ip address
+ shutdown
+!
+ip classless
+ip route 10.0.0.0 255.255.0.0 10.255.255.1 
+ip route 0.0.0.0 0.0.0.0 10.255.255.1 
+ip route 10.1.0.0 255.255.0.0 10.1.254.1 
+ip route 10.0.0.0 255.255.0.0 50.50.50.1 
+!
+ip flow-export version 9
+!
+!
+access-list 110 permit gre host 10.255.255.2 host 10.255.255.1
+ip access-list standard IT-MGMT
+ permit 10.0.10.0 0.0.0.255
+ permit 10.1.10.0 0.0.0.255
+ deny any
+!
+!
+!
+!
+!
+line con 0
+!
+line aux 0
+!
+line vty 0 4
+ access-class IT-MGMT in
+ exec-timeout 15 0
+ login local
+ transport input ssh
+!
+!
+!
+end
